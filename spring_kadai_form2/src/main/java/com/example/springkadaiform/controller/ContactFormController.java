@@ -1,11 +1,11 @@
 package com.example.springkadaiform.controller;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.example.springkadaiform.form.ContactForm;
 
@@ -15,17 +15,17 @@ import jakarta.validation.Valid;
 public class ContactFormController {
 
     @GetMapping("/form")
-    public String showForm(ContactForm contactForm) {
+    public String showForm(@ModelAttribute("contactForm") ContactForm contactForm) {
         return "contactFormView";
     }
 
     @PostMapping("/form")
-    public String submitForm(@Valid @ModelAttribute ContactForm contactForm, BindingResult result, Model model) {
+    public String submitForm(@Valid @ModelAttribute("contactForm") ContactForm contactForm, BindingResult result, RedirectAttributes redirectAttributes) {
         if (result.hasErrors()) {
-            return "contactFormView";
+            redirectAttributes.addFlashAttribute("org.springframework.validation.BindingResult.contactForm", result);
+            redirectAttributes.addFlashAttribute("contactForm", contactForm);
+            return "redirect:/form"; // リダイレクトで元のフォームに戻る
         }
-        model.addAttribute("contactForm", contactForm);
         return "confirmView";
     }
-
 }
